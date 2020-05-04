@@ -100,12 +100,13 @@ print('\nCoherence Score: ', coherence_lda)
 vis = pyLDAvis.gensim.prepare(lda_model_tfidf, corpus_tfidf, dictionary)
 # vis
 pyLDAvis.save_html(vis, 'LDA_Visualization8.html')
+#creating vectors for questions
 docs=[]
 c=0
 for c in range(0,len(bow_corpus)):
     vector=[]
     for index, score in lda_model_tfidf[bow_corpus[c]]:
-        print("\nScore: {}\t \nTopic: {}".format(score, index))
+        # print("\nScore: {}\t \nTopic: {}".format(score, index))
         vector.append(score)
     c=c+1
     docs.append(vector)
@@ -113,4 +114,47 @@ print(len(bow_corpus)-1)
 print(len(data['question']))
 data['questopics']=docs
 print(data['questopics'])
-# df2 = df.assign(address = ['Delhi', 'Bangalore', 'Chennai', 'Patna'])
+
+#creating answer vectors
+# bow_corpus = [dictionary.doc2bow(doc) for doc in data['token']
+# tokens0=[]
+# tokens0=data.apply(lambda row: nltk.word_tokenize(row['ans0']), axis=1)
+# print(tokens0)
+list0 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans0']), axis=1)]
+list1 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans1']), axis=1)]
+list2 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans2']), axis=1)]
+list3 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans3']), axis=1)]
+list4 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans4']), axis=1)]
+list5 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans5']), axis=1)]
+list6 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans6']), axis=1)]
+list7 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans7']), axis=1)]
+list8 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans8']), axis=1)]
+list9 = [dictionary.doc2bow(doc) for doc in data.apply(lambda row: nltk.word_tokenize(row['ans9']), axis=1)]
+anslist=[]
+anslist.append(list0)
+anslist.append(list1)
+anslist.append(list2)
+anslist.append(list3)
+anslist.append(list4)
+anslist.append(list5)
+anslist.append(list6)
+anslist.append(list7)
+anslist.append(list8)
+anslist.append(list9)
+print(anslist[0][0])
+print(bow_corpus[0])
+for i in range(0,len(anslist)):
+    docs=[]
+    c=0
+    for c in range(0,len(anslist[i])):
+        vector=[]
+        for index, score in lda_model_tfidf[anslist[i][c]]:
+            # print("\nScore: {}\t \nTopic: {}".format(score, index))
+            vector.append(score)
+        c=c+1
+        docs.append(vector)
+
+    data['ans'+str(i)+'topics']=docs
+for i in range(0,len(anslist)):
+    print(data['ans'+str(i)+'topics'])
+print(data.keys())
