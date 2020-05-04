@@ -19,8 +19,7 @@ lemmatizer= WordNetLemmatizer()
 def lemmatize_stemming(text):
     return lemmatizer.lemmatize(text) 
 def preprocess(text):
-    # text.replace("<br/>","")
-    # text.replace("\n","")
+
     string = ' '
     for token in gensim.utils.simple_preprocess(text):
 
@@ -37,11 +36,7 @@ for rows in data:
         flag2+=1
         doc_sample = data[flag][flag2]
         print('original document: ')
-        # doc_sample=doc_sample.replace("<br />","$")
-        # doc_sample=doc_sample.replace("\n","$")
-        # doc_sample=doc_sample.strip("<br />")
-        # doc_sample=doc_sample.strip("\n")
-        # doc_sample = " ".join(doc_sample.splitlines())
+      
         print(doc_sample)
         print('tokenized and lemmatized document: ')
         print(preprocess(doc_sample))
