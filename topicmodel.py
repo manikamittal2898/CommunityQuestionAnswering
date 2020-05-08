@@ -1,5 +1,8 @@
 import pandas as pd
+import numpy as np
 from numpy import array
+from numpy import dot
+from numpy.linalg import norm
 import nltk
 
 import gensim
@@ -11,8 +14,8 @@ import pyLDAvis
 import pyLDAvis.gensim 
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('/home/manika/Desktop/padhai/IR/hojaabhai.csv', error_bad_lines=False)
-
+data = pd.read_csv('/home/manika/Desktop/padhai/IR/finaldataver2.csv', error_bad_lines=False)
+print(data.keys())
 data['question'] = data['subject'].str.cat(data['content'], sep ="") 
 
 data['tokens'] = data.apply(lambda row: nltk.word_tokenize(row['question']), axis=1)
@@ -36,7 +39,7 @@ from pprint import pprint
 # for doc in corpus_tfidf:
 #     pprint(doc)
     # break
-print(len(dictionary))
+# print(len(dictionary))
 # lda_model = gensim.models.LdaMulticore(bow_corpus, num_topics=10, id2word=dictionary, passes=2, workers=2)
 # for idx, topic in lda_model.print_topics(-1):
 #     print('Topic: {} \nWords: {}'.format(idx, topic))
@@ -84,36 +87,51 @@ print(len(dictionary))
 # plt.ylabel("Coherence score")
 # plt.legend(("coherence_values"), loc='best')
 # plt.show()
-
+np.random.seed(1)
 lda_model_tfidf = gensim.models.LdaMulticore(corpus_tfidf, num_topics=8, id2word=dictionary, passes=10, workers=4)
-for idx, topic in lda_model_tfidf.print_topics(-1):
-    print('Topic: {} Word: {}'.format(idx, topic))
-for index, score in sorted(lda_model_tfidf[bow_corpus[0]], key=lambda tup: -1*tup[1]):
-    print("\nScore: {}\t \nTopic: {}".format(score, lda_model_tfidf.print_topic(index, 10)))
+# for idx, topic in lda_model_tfidf.print_topics(-1):
+# #     # print('Topic: {} Word: {}'.format(idx, topic))
+# for index, score in sorted(lda_model_tfidf[bow_corpus[0]], key=lambda tup: -1*tup[1]):
+#      print("\nScore: {}\t \nTopic: {}".format(score, index))
 
 coherence_model_lda = CoherenceModel(model=lda_model_tfidf, texts=data['tokens'],dictionary=dictionary, coherence='c_v')
 coherence_lda = coherence_model_lda.get_coherence()
-print('\nCoherence Score: ', coherence_lda)
+# print('\nCoherence Score: ', coherence_lda)
 
 
 
-vis = pyLDAvis.gensim.prepare(lda_model_tfidf, corpus_tfidf, dictionary)
-# vis
-pyLDAvis.save_html(vis, 'LDA_Visualization8.html')
+# vis = pyLDAvis.gensim.prepare(lda_model_tfidf, corpus_tfidf, dictionary)
+# # vis
+# pyLDAvis.save_html(vis, 'LDA_Visualization8.html')
 #creating vectors for questions
 docs=[]
+
 c=0
 for c in range(0,len(bow_corpus)):
+    counter=0
     vector=[]
     for index, score in lda_model_tfidf[bow_corpus[c]]:
         # print("\nScore: {}\t \nTopic: {}".format(score, index))
+        while index!=counter:
+            vector.append(0.0)
+            counter+=1
         vector.append(score)
+        counter+=1
+    #number of topics is 8
+
+        
+      
+    # while(len(vector)!=8):
+    #     vector.append(0)
+    while counter!=8:
+        vector.append(0.0)
+        counter+=1   
     c=c+1
     docs.append(vector)
-print(len(bow_corpus)-1)
-print(len(data['question']))
+# print(len(bow_corpus)-1)
+# print(len(data['question']))
 data['questopics']=docs
-print(data['questopics'])
+# print(data['questopics'])
 
 #creating answer vectors
 # bow_corpus = [dictionary.doc2bow(doc) for doc in data['token']
@@ -141,20 +159,109 @@ anslist.append(list6)
 anslist.append(list7)
 anslist.append(list8)
 anslist.append(list9)
-print(anslist[0][0])
-print(bow_corpus[0])
+# print(anslist[0][0])
+# print(bow_corpus[0])
+
 for i in range(0,len(anslist)):
     docs=[]
     c=0
     for c in range(0,len(anslist[i])):
+        counter=0
         vector=[]
         for index, score in lda_model_tfidf[anslist[i][c]]:
             # print("\nScore: {}\t \nTopic: {}".format(score, index))
+            while index!=counter:
+                vector.append(0.0)
+                counter+=1
             vector.append(score)
+            counter+=1
+    #number of topics is 8
+
+        
+      
+    # while(len(vector)!=8):
+    #     vector.append(0)
+        while counter!=8:
+            vector.append(0.0)
+            counter+=1   
+            # vector.append(score)
         c=c+1
         docs.append(vector)
 
     data['ans'+str(i)+'topics']=docs
-for i in range(0,len(anslist)):
-    print(data['ans'+str(i)+'topics'])
-print(data.keys())
+# for i in range(0,len(anslist)):
+#     print(data['ans'+str(i)+'topics'])
+# print(data.keys())
+
+# data.to_csv('topic_modelled.csv')
+
+# dfObj= pd.DataFrame(columns=['ans0sim','ans1sim','ans2sim','ans3sim','ans4sim','ans5sim','ans6sim','ans7sim','ans8sim','ans9sim'])
+
+# def cosine_val(a,b):
+#       cos_sim = np.dot(a, b)/(norm(a)*norm(b))
+#   return cos_sim
+#print(cos_sim)
+
+
+# flag=-1
+# rows=0
+# columns=15
+# for rows in data:
+#     x=0
+#     columns=15
+#     for columns in rows:
+#       a= data[rows][columns]
+#       while columns<26:
+#           columns+=1
+#           b= data[rows][columns]
+#           if b*b!=2.165:
+#               similarity=cosine_val(a,b)
+#               dfObj[rows][x]=similarity
+#               x+=1
+#           else:
+#               dfObj[flag][flag3]='Null'
+#               flag3+=1
+
+
+# for index in range(data.shape[1]):
+#        print('Column Number : ', index)
+#    # Select column by index position using iloc[]
+#    columnSeriesObj = empDfObj.iloc[: , index]
+#    print('Column Contents : ', columnSeriesObj.values)
+
+# print(np.dot([1,-1],[0,1]))
+answerscol=data.iloc[:,16:] 
+# b=data.iloc[:,15]
+columns=list(answerscol)
+r=0
+sim=[]
+# a=[]
+# b=[]
+counter=0
+for r in range(0,len(data)):
+    row_sim=[]
+    for i in columns:
+    # if r<len(data):
+        a=np.array(data['questopics'][r])
+        b= np.array(data[i][r])
+        # counter+=1
+        # if cmp(a.shape,b.shape)==1:
+        c=data[i][r]
+        result = False
+        result=all(elem==c[0] for elem in c)
+        if result:
+            row_sim.append(0)
+        else:
+            row_sim.append(np.dot(a,b)/(norm(a)*norm(b)))
+        #####print(str(a*b)+"  count is "+ str(counter))
+        # else:
+        #     row_sim.append("NULL")
+
+    sim.append(row_sim)
+data['cosinescores']=sim
+print(data['cosinescores'])
+
+
+data.to_csv('topic_modelled.csv')
+
+
